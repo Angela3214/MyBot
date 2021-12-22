@@ -32,13 +32,13 @@ def message_reply(message):
     global ok
 
     if message.text == "Добавить День Рождения":
-        bot.send_message(message.chat.id, 'Пожалуйста, вводите уникальные имена пользователей')
-        bot.send_message(message.chat.id, 'Введите имя и дату рождения в формате ИМЯ#ДД.ММ.ГГГГ')
+        bot.send_message(message.chat.id, 'Пожалуйста, вводите уникальные записки пользователей')
+        bot.send_message(message.chat.id, 'Введите записку и дату рождения в формате ИМЯ#ДД.ММ.ГГГГ')
         ok = 1
         return
     elif message.text == "Удалить День Рождения":
-        bot.send_message(message.chat.id, 'Пожалуйста, вводите корректное имя, которое добавляли ранее')
-        bot.send_message(message.chat.id, 'Введите имя пользователя, которого желаете удалить')
+        bot.send_message(message.chat.id, 'Пожалуйста, вводите корректную записку, которую добавляли ранее')
+        bot.send_message(message.chat.id, 'Введите записку, которую желаете удалить')
         ok = 2
         return
     elif message.text == "Вывести созданные данные":
