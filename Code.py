@@ -1,7 +1,11 @@
 import telebot
 from telebot import types
 import datetime
-from threading import Thread
+import sqlite3
+
+conn = sqlite3.connect('telegram_bot.db')
+curs = conn.cursor().execute('''create table if not exists birthdays(id_telegram) varchar2(200),
+                                    v_birth_note varchar2(1000), d_birthday date)''')
 
 bot = telebot.TeleBot('5019599335:AAFvC46wOT3vX2GK-53gqLyJwBm8yQowWZM')
 mp = dict()
@@ -57,15 +61,11 @@ def message_reply(message):
 def start():
     bot.polling(none_stop=True, interval=1)
 
-#@bot.message_handler(content_types='text')
-"""def Check_birthday():
+@bot.message_handler(content_types='text')
+def Check_birthday(message):
     for el in mp:
         impl_data = datetime.date(mp[el][4:], mp[el][2:4], mp[el][:2])
         if impl_data == datetime.date.today():
-            bot.send_message(id_user, 'Не забудь поздравить ' + el + ' с Днём Рождеия')
-    bot.polling(none_stop=True, interval=8) """
-#tm1 = Thread(target=start)
-#tm2 = Thread(target=Check_birthday)
-# tm2.start()
-# tm1.start()
+            bot.send_message(message.chat.id, 'Не забудь поздравить ' + el + ' с Днём Рождеия')
+    bot.polling(none_stop=True, interval=8)
 start()
