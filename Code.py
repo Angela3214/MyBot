@@ -4,16 +4,18 @@ import datetime
 import sqlite3
 
 conn = sqlite3.connect('telegram_bot.db')
-curs = conn.cursor().execute('''create table if not exists birthdays(id_telegram) varchar2(200),
-                                    v_birth_note varchar2(1000), d_birthday date)''')
+curs = conn.cursor().execute(
+    '''create table if not exists birthdays(id_telegram varchar2(200), v_birth_note varchar2(1000), d_birthday date)''')
 
 bot = telebot.TeleBot('5019599335:AAFvC46wOT3vX2GK-53gqLyJwBm8yQowWZM')
 mp = dict()
 
+
 @bot.message_handler(commands=['start'])
 def button_message(message):
     user_name = message.from_user.first_name
-    bot.send_message(message.chat.id, 'Теперь ты никогда не будешь забывать поздравить друзей с Днём Рождения, ' + user_name)
+    bot.send_message(message.chat.id,
+                     'Теперь ты никогда не будешь забывать поздравить друзей с Днём Рождения, ' + user_name)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("Добавить День Рождения")
     item2 = types.KeyboardButton("Удалить День Рождения")
@@ -58,14 +60,16 @@ def message_reply(message):
             bot.send_message(message.chat.id, 'Я удалиль, теперь этого клоуна нет в твоих данных')
     ok = 0
 
+
 def start():
     bot.polling(none_stop=True, interval=1)
 
-@bot.message_handler(content_types='text')
+
+'''@bot.message_handler(content_types='text')
 def Check_birthday(message):
     for el in mp:
         impl_data = datetime.date(mp[el][4:], mp[el][2:4], mp[el][:2])
         if impl_data == datetime.date.today():
             bot.send_message(message.chat.id, 'Не забудь поздравить ' + el + ' с Днём Рождеия')
-    bot.polling(none_stop=True, interval=8)
+    bot.polling(none_stop=True, interval=8)'''
 start()
