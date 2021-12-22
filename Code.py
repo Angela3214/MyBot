@@ -2,14 +2,17 @@ import telebot
 from telebot import types
 import datetime
 from threading import Thread
+import sqlite3
 
-bot = telebot.TeleBot('5019599335:AAFvC46wOT3vX2GK-53gqLyJwBm8yQowWZM')
+bot = telebot.TeleBot('2091843643:AAHUq-hDiXRnRJT8YIPN5b4DdKOvAB0azmA', parse_mode=None)
 mp = dict()
+
 
 @bot.message_handler(commands=['start'])
 def button_message(message):
     user_name = message.from_user.first_name
-    bot.send_message(message.chat.id, 'Теперь ты никогда не будешь забывать поздравить друзей с Днём Рождения, ' + user_name)
+    bot.send_message(message.chat.id,
+                     'Теперь ты никогда не будешь забывать поздравить друзей с Днём Рождения, ' + user_name)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("Добавить День Рождения")
     item2 = types.KeyboardButton("Удалить День Рождения")
@@ -40,6 +43,7 @@ def message_reply(message):
     elif message.text == "Вывести созданные данные":
         for el in mp:
             bot.send_message(message.chat.id, el + ' : ' + mp[el] + '\n')
+
     if ok == 1:
         ind_end_name = message.text.index('#')
         name = message.text[:ind_end_name]
@@ -47,25 +51,25 @@ def message_reply(message):
         mp[name] = data
         bot.send_message(message.chat.id, 'Ух ты, успешно добавил!')
     elif ok == 2:
-        if mp.get(message.text) == None:
+        if mp.get(message.text) is None:
             bot.send_message(message.chat.id, 'Ну я же попросил...Ошибка: такого пользователя нет')
         else:
             mp.pop(message.text)
             bot.send_message(message.chat.id, 'Я удалиль, теперь этого клоуна нет в твоих данных')
     ok = 0
 
-def start():
-    bot.polling(none_stop=True, interval=1)
 
-#@bot.message_handler(content_types='text')
+def start():
+    bot.infinity_polling()
+
+
+# @bot.message_handler(content_types='text')
 """def Check_birthday():
     for el in mp:
         impl_data = datetime.date(mp[el][4:], mp[el][2:4], mp[el][:2])
         if impl_data == datetime.date.today():
             bot.send_message(id_user, 'Не забудь поздравить ' + el + ' с Днём Рождеия')
     bot.polling(none_stop=True, interval=8) """
-#tm1 = Thread(target=start)
-#tm2 = Thread(target=Check_birthday)
-# tm2.start()
-# tm1.start()
+tm1 = Thread(target=start)
+tm1.start()
 start()
