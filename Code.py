@@ -3,11 +3,14 @@ from telebot import types
 import datetime
 import sqlite3
 
-conn = sqlite3.connect('telegram_bot.db')
-curs = conn.cursor().execute(
-    '''create table if not exists birthdays(id_telegram varchar2(200), v_birth_note varchar2(1000), d_birthday date)''')
+format_string = '{{:<{}}}'.format(20)
 
-bot = telebot.TeleBot('5019599335:AAFvC46wOT3vX2GK-53gqLyJwBm8yQowWZM')
+# conn = sqlite3.connect('telegram_bot.db')
+# curs = conn.cursor()
+# curs.execute('''create table if not exists birthdays(id_telegram varchar2(200), v_birth_note varchar2(1000), d_birthday date)''')
+# curs.close()
+
+bot = telebot.TeleBot('2091843643:AAHUq-hDiXRnRJT8YIPN5b4DdKOvAB0azmA')
 mp = dict()
 
 
@@ -15,7 +18,7 @@ mp = dict()
 def button_message(message):
     user_name = message.from_user.first_name
     bot.send_message(message.chat.id,
-                     'Теперь ты никогда не будешь забывать поздравить друзей с Днём Рождения, ' + user_name)
+                     'Теперь ты никогда не будешь забывать поздравить друзей с Днём Рождения, {}'.format(user_name))
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("Добавить День Рождения")
     item2 = types.KeyboardButton("Удалить День Рождения")
@@ -32,33 +35,41 @@ ok = 0
 @bot.message_handler(content_types='text')
 def message_reply(message):
     global ok
+    conn = sqlite3.connect('telegram_bot.db')
+    curs = conn.cursor()
+    human_id = message.chat.id
 
     if message.text == "Добавить День Рождения":
-        bot.send_message(message.chat.id, 'Пожалуйста, вводите уникальные записки пользователей')
-        bot.send_message(message.chat.id, 'Введите записку и дату рождения в формате ИМЯ#ДД.ММ.ГГГГ')
+        bot.send_message(human_id, 'Пожалуйста, вводите уникальные записки пользователей')
+        bot.send_message(human_id, 'Введите записку и дату рождения в формате ИМЯ#ДД.ММ.ГГГГ')
         ok = 1
         return
     elif message.text == "Удалить День Рождения":
-        bot.send_message(message.chat.id, 'Пожалуйста, вводите корректную записку, которую добавляли ранее')
-        bot.send_message(message.chat.id, 'Введите записку, которую желаете удалить')
+        bot.send_message(human_id, 'Пожалуйста, вводите корректную записку, которую добавляли ранее')
+        bot.send_message(human_id, 'Введите записку, которую желаете удалить')
         ok = 2
         return
     elif message.text == "Вывести созданные данные":
-        for el in mp:
-            bot.send_message(message.chat.id, el + ' : ' + mp[el] + '\n')
+        if curs.execute('select v_birth_note, d_birthday from birthdays where id_telegram like \'{}\''.format(human_id)):
+            for lines in curs.fetchall():
+                bot.send_message(human_id, ''.join(format_string.format(line) for line in lines))
+
     if ok == 1:
         ind_end_name = message.text.index('#')
         name = message.text[:ind_end_name]
         data = message.text[ind_end_name + 1:]
-        mp[name] = data
-        bot.send_message(message.chat.id, 'Ух ты, успешно добавил!')
+        if curs.execute('insert into birthdays values(\'{}\', \'{}\', \'{}\')'.format(human_id, name, data)):
+            conn.commit()
+            bot.send_message(human_id, 'Ух ты, успешно добавил!')
+
     elif ok == 2:
         if mp.get(message.text) == None:
-            bot.send_message(message.chat.id, 'Ну я же попросил...Ошибка: такого пользователя нет')
+            bot.send_message(human_id, 'Ну я же попросил...Ошибка: такого пользователя нет')
         else:
             mp.pop(message.text)
-            bot.send_message(message.chat.id, 'Я удалиль, теперь этого клоуна нет в твоих данных')
+            bot.send_message(human_id, 'Я удалиль, теперь этого клоуна нет в твоих данных')
     ok = 0
+    curs.close()
 
 
 def start():
