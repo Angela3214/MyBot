@@ -52,7 +52,7 @@ def message_reply(message):
         elif message.text == "Проверить Дни Рождения":
             ok = 3
         elif message.text == "Вывести созданные данные":
-            if curs.execute('select v_birth_note, d_birthday from birthdays where id_telegram = {}'.format(human_id)):
+            if curs.execute(f'select v_birth_note, d_birthday from birthdays where id_telegram = {human_id}'):
                 for lines in curs.fetchall():
                     bot.send_message(human_id, ''.join(format_string.format(line) for line in lines))
 
@@ -60,15 +60,13 @@ def message_reply(message):
             ind_end_name = message.text.index('#')
             name = message.text[:ind_end_name]
             data = message.text[ind_end_name + 1:]
-            if curs.execute('insert into birthdays values(\'{}\', \'{}\', \'{}\')'.format(human_id, name, data)):
+            if curs.execute(f'insert into birthdays values(\'{human_id}\', \'{name}\', \'{data}\')'):
                 conn.commit()
                 bot.send_message(human_id, 'Ух ты, успешно добавил!')
 
         elif ok == 2:
-            curs.execute('delete from birthdays where id_telegram = {} and v_birth_note = \'{}\''.format(human_id,
-                                                                                                         message.text))
-            curs.execute('select * from birthdays where id_telegram = {} and v_birth_note = \'{}\''.format(human_id,
-                                                                                                           message.text))
+            curs.execute(f'delete from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
+            curs.execute(f'select * from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
             test = curs.fetchall()
             print(test)
             if not test:
@@ -79,8 +77,8 @@ def message_reply(message):
         elif ok == 3:
             tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m")
             if curs.execute(
-                    'select id_telegram, '
-                    'v_birth_note from birthdays where d_birthday like \'{}%\''.format(tomorrow)):
+                    f'select id_telegram, '
+                    'v_birth_note from birthdays where d_birthday like \'{tomorrow}%\''):
                 for line in curs.fetchall():
                     bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
             else:
@@ -100,7 +98,7 @@ def check():
     conn2 = sqlite3.connect('telegram_bot.db')
     curs2 = conn2.cursor()
     tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m.%Y")
-    curs2.execute('select id_telegram, v_birth_note from birthdays where v_birth_day = {}'.format(tomorrow))
+    curs2.execute(f'select id_telegram, v_birth_note from birthdays where v_birth_day = {tomorrow}')
     for line in curs2.fetchall():
         bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
     bot.polling(none_stop=True, interval=8)
