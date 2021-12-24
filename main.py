@@ -1,15 +1,15 @@
+"""This is the code of my bot"""
 from datetime import timedelta, date
 import os
 import sqlite3
 import telebot
 
-format_string = '{{:<{10}}}'
+formatString = '{{:<{10}}}'
 
 conn1 = sqlite3.connect('telegram_bot.db')
 curs1 = conn1.cursor()
-curs1.execute(
-    '''create table if not exists birthdays(id_tel varchar2(200), 
-    note varchar2(1000), d_birthday date)''')
+curs1.execute('''create table if not exists birthdays(id_tel varchar2(200), 
+                        note varchar2(1000), d_birthday date)''')
 curs1.close()
 
 bot = telebot.TeleBot(os.environ['my_tlabelen'])
@@ -34,6 +34,7 @@ def button_message(message):
 
 
 def answer(label, conn, curs, message, human_id):
+    """Implementing every label"""
     if label == 1:
         ind_end_name = message.text.index('#')
         name = message.text[:ind_end_name]
@@ -91,7 +92,8 @@ def message_reply(message):
             if curs.execute(
                     f'select note, d_birthday from birthdays where id_tel = {human_id}'):
                 for lines in curs.fetchall():
-                    bot.send_message(human_id, ''.join(format_string.format(line) for line in lines))
+                    bot.send_message(human_id,
+                                     ''.join(formatString.format(line) for line in lines))
         answer(label, conn, curs, message, human_id)
         curs.close()
 
