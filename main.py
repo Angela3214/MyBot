@@ -38,12 +38,14 @@ def answer(label, conn, curs, message, human_id):
         ind_end_name = message.text.index('#')
         name = message.text[:ind_end_name]
         data = message.text[ind_end_name + 1:]
-        if curs.execute(f'insert into birthdays values(\'{human_id}\', \'{name}\', \'{data}\')'):
+        if curs.execute(
+                f'insert into birthdays values(\'{human_id}\', \'{name}\', \'{data}\')'):
             conn.commit()
             bot.send_message(human_id, 'Ух ты, успешно добавил!')
 
     elif label == 2:
-        curs.execute(f'delete from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
+        curs.execute(
+            f'delete from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
         curs.execute(
             f'select * from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
         test = curs.fetchall()
@@ -85,7 +87,8 @@ def message_reply(message):
         elif message.text == "Проверить Дни Рождения":
             label = 3
         elif message.text == "Вывести созданные данные":
-            if curs.execute(f'select v_birth_note, d_birthday from birthdays where id_telegram = {human_id}'):
+            if curs.execute(
+                    f'select v_birth_note, d_birthday from birthdays where id_telegram = {human_id}'):
                 for lines in curs.fetchall():
                     bot.send_message(human_id, ''.join(format_string.format(line) for line in lines))
         answer(label, conn, curs, message, human_id)
@@ -106,7 +109,8 @@ def check():
     conn2 = sqlite3.connect('telegram_bot.db')
     curs2 = conn2.cursor()
     tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m.%Y")
-    curs2.execute(f'select id_telegram, v_birth_note from birthdays where v_birth_day = {tomorrow}')
+    curs2.execute(
+        f'select id_telegram, v_birth_note from birthdays where v_birth_day = {tomorrow}')
     for line in curs2.fetchall():
         bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
     bot.polling(none_stop=True, interval=8)
