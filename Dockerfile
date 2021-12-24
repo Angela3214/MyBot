@@ -1,5 +1,5 @@
 FROM python:latest
-COPY Code.py /
+COPY main.py /
 ARG my_secret_token
 ENV my_token $my_secret_token
 RUN pip install --user pyTelegramBotAPI
