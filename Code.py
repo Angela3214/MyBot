@@ -97,7 +97,7 @@ def message_reply(message):
 
 
 def start():
-    bot.polling(none_stop=True, interval=1)
+    bot.polling(none_stop=True, interval=0)
 
 
 @bot.message_handler(content_types='text')
