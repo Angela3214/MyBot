@@ -17,6 +17,7 @@ bot = telebot.TeleBot(os.environ['my_token'])
 
 @bot.message_handler(commands=['start'])
 def button_message(message):
+    """implementing buttons"""
     user_name = message.from_user.first_name
     bot.send_message(message.chat.id,
                      'Теперь ты никогда не будешь забывать поздравить друзей с Днём Рождения, {}'.format(user_name))
@@ -34,6 +35,7 @@ def button_message(message):
 
 @bot.message_handler(content_types='text')
 def message_reply(message):
+    """implementing answers"""
     try:
         ok = 0
         conn = sqlite3.connect('telegram_bot.db')
@@ -90,18 +92,14 @@ def message_reply(message):
         print(e)
 
 
-'''Start out bot'''
-
-
 def start():
+    """Start out bot"""
     bot.polling(none_stop=True, interval=0)
-
-
-'''Check birthday'''
 
 
 @bot.message_handler(content_types='text')
 def check():
+    """Check birthday"""
     conn2 = sqlite3.connect('telegram_bot.db')
     curs2 = conn2.cursor()
     tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m.%Y")
