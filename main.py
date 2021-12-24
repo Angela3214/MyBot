@@ -8,7 +8,7 @@ FORM = '{{:<{10}}}'
 conn1 = sqlite3.connect('telegram_bot.db')
 curs1 = conn1.cursor()
 curs1.execute('''create table if not exists birthdays(id_tel varchar2(200), 
-                        note varchar2(1000), d_birthday date)''')
+note varchar2(1000), d_birthday date)''')
 curs1.close()
 
 bot = telebot.TeleBot(os.environ['my_tlabelen'])
