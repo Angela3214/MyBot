@@ -11,13 +11,14 @@ curs1.execute('''create table if not exists birthdays(id_tel varchar2(200),
 note varchar2(1000), d_birthday date)''')
 curs1.close()
 
-bot = telebot.TeleBot(os.environ['my_tlabelen'])
+bot = telebot.TeleBot(os.environ['my_token'])
 
 
 @bot.message_handler(commands=['start'])
 def button_message(message):
     """implementing buttons"""
-    bot.send_message(message.chat.id, 'Добро пожаловать!, {message.from_user.first_name}')
+    username = message.from_user.first_name
+    bot.send_message(message.chat.id, 'Добро пожаловать!, {}'.format(username))
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = telebot.types.KeyboardButton("Добавить День Рождения")
     item2 = telebot.types.KeyboardButton("Удалить День Рождения")
