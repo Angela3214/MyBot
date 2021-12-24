@@ -5,12 +5,12 @@ import telebot
 
 format_string = '{{:<{}}}'.format(10)
 
-conn = sqlite3.connect('telegram_bot.db')
-curs = conn.cursor()
-curs.execute(
+conn1 = sqlite3.connect('telegram_bot.db')
+curs1 = conn1.cursor()
+curs1.execute(
     '''create table if not exists birthdays(id_telegram varchar2(200), 
     v_birth_note varchar2(1000), d_birthday date)''')
-curs.close()
+curs1.close()
 
 bot = telebot.TeleBot(os.environ['my_token'])
 
@@ -32,13 +32,10 @@ def button_message(message):
     bot.send_message(message.chat.id, 'Выберите нужную функцию', reply_markup=markup)
 
 
-ok = 0
-
-
 @bot.message_handler(content_types='text')
 def message_reply(message):
     try:
-        global ok
+        ok = 0
         conn = sqlite3.connect('telegram_bot.db')
         curs = conn.cursor()
         human_id = message.chat.id
@@ -48,13 +45,11 @@ def message_reply(message):
                              'Для удобства использования вводите уникальные записки пользователей')
             bot.send_message(human_id, 'Введите записку и дату рождения в формате ИМЯ#ДД.ММ.ГГГГ')
             ok = 1
-            return
-        if message.text == "Удалить День Рождения":
+        elif message.text == "Удалить День Рождения":
             bot.send_message(human_id, 'Пожалуйста, вводите корректную записку, которую добавляли ранее')
             bot.send_message(human_id, 'Введите записку, которую желаете удалить')
             ok = 2
-            return
-        if message.text == "Проверить Дни Рождения":
+        elif message.text == "Проверить Дни Рождения":
             ok = 3
         elif message.text == "Вывести созданные данные":
             if curs.execute('select v_birth_note, d_birthday from birthdays where id_telegram = {}'.format(human_id)):
@@ -90,8 +85,6 @@ def message_reply(message):
                     bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
             else:
                 bot.send_message(human_id, 'Никого неть :c')
-
-        ok = 0
         curs.close()
 
     except Exception as e:
@@ -103,12 +96,12 @@ def start():
 
 
 @bot.message_handler(content_types='text')
-def Check_birthday():
-    conn = sqlite3.connect('telegram_bot.db')
-    curs = conn.cursor()
+def check():
+    conn2 = sqlite3.connect('telegram_bot.db')
+    curs2 = conn2.cursor()
     tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m.%Y")
-    curs.execute('select id_telegram, v_birth_note from birthdays where v_birth_day = {}'.format(tomorrow))
-    for line in curs.fetchall():
+    curs2.execute('select id_telegram, v_birth_note from birthdays where v_birth_day = {}'.format(tomorrow))
+    for line in curs2.fetchall():
         bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
     bot.polling(none_stop=True, interval=8)
 
