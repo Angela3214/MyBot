@@ -66,7 +66,8 @@ def message_reply(message):
 
         elif ok == 2:
             curs.execute(f'delete from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
-            curs.execute(f'select * from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
+            curs.execute(
+                f'select * from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
             test = curs.fetchall()
             print(test)
             if not test:
@@ -89,8 +90,14 @@ def message_reply(message):
         print(e)
 
 
+'''Start out bot'''
+
+
 def start():
     bot.polling(none_stop=True, interval=0)
+
+
+'''Check birthday'''
 
 
 @bot.message_handler(content_types='text')
