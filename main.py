@@ -4,7 +4,7 @@ import os
 import sqlite3
 import telebot
 
-formatString = '{{:<{10}}}'
+form = '{{:<{10}}}'
 
 conn1 = sqlite3.connect('telegram_bot.db')
 curs1 = conn1.cursor()
