@@ -70,35 +70,35 @@ def answer(label, conn, curs, message, human_id):
 @bot.message_handler(content_types='text')
 def message_reply(message):
     """implementing answers"""
-    try:
-        label = 0
-        conn = sqlite3.connect('telegram_bot.db')
-        curs = conn.cursor()
-        human_id = message.chat.id
-        if message.text == "Добавить День Рождения":
-            bot.send_message(human_id,
-                             'Для удобства использования вводите '
-                             'уникальные записки пользователей')
-            bot.send_message(human_id, 'Введите записку и дату рождения в формате ИМЯ#ДД.ММ.ГГГГ')
-            label = 1
-        elif message.text == "Удалить День Рождения":
-            bot.send_message(human_id, 'Пожалуйста, вводите корректную записку, '
-                                       'которую добавляли ранее')
-            bot.send_message(human_id, 'Введите записку, которую желаете удалить')
-            label = 2
-        elif message.text == "Проверить Дни Рождения":
-            label = 3
-        elif message.text == "Вывести созданные данные":
-            if curs.execute(
-                    f'select note, d_birthday from birthdays where id_tel = {human_id}'):
-                for lines in curs.fetchall():
-                    bot.send_message(human_id,
-                                     ''.join(form.format(line) for line in lines))
-        answer(label, conn, curs, message, human_id)
-        curs.close()
+    label = 0
+    conn = sqlite3.connect('telegram_bot.db')
+    curs = conn.cursor()
+    human_id = message.chat.id
+    if message.text == "Добавить День Рождения":
+        bot.send_message(human_id,
+                         'Для удобства использования вводите '
+                         'уникальные записки пользователей')
+        bot.send_message(human_id, 'Введите записку и дату рождения в формате ИМЯ#ДД.ММ.ГГГГ')
+        label = 1
+    elif message.text == "Удалить День Рождения":
+        bot.send_message(human_id, 'Пожалуйста, вводите корректную записку, '
+                                   'которую добавляли ранее')
+        bot.send_message(human_id, 'Введите записку, которую желаете удалить')
+        label = 2
+    elif message.text == "Проверить Дни Рождения":
+        label = 3
+    elif message.text == "Вывести созданные данные":
+        if curs.execute(
+                f'select note, d_birthday from birthdays where id_tel = {human_id}'):
+            for lines in curs.fetchall():
+                bot.send_message(human_id,
+                                 ''.join(form.format(line) for line in lines))
+    answer(label, conn, curs, message, human_id)
+    curs.close()
 
-    except Exception as element:
-        print(element)
+
+# except Exception as element:
+# print(element)
 
 
 def start():
