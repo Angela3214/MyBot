@@ -1,18 +1,18 @@
-import telebot
 from datetime import timedelta, date
-import sqlite3
 import os
+import sqlite3
+import telebot
 
 format_string = '{{:<{}}}'.format(10)
 
 conn = sqlite3.connect('telegram_bot.db')
 curs = conn.cursor()
 curs.execute(
-    '''create table if not exists birthdays(id_telegram varchar2(200), v_birth_note varchar2(1000), d_birthday date)''')
+    '''create table if not exists birthdays(id_telegram varchar2(200), 
+    v_birth_note varchar2(1000), d_birthday date)''')
 curs.close()
 
-#bot = telebot.TeleBot(os.environ['my_token'])
-bot = telebot.TeleBot('5019599335:AAFvC46wOT3vX2GK-53gqLyJwBm8yQowWZM')
+bot = telebot.TeleBot(os.environ['my_token'])
 
 
 @bot.message_handler(commands=['start'])
@@ -44,16 +44,17 @@ def message_reply(message):
         human_id = message.chat.id
 
         if message.text == "Добавить День Рождения":
-            bot.send_message(human_id, 'Для удобства использования вводите уникальные записки пользователей')
+            bot.send_message(human_id,
+                             'Для удобства использования вводите уникальные записки пользователей')
             bot.send_message(human_id, 'Введите записку и дату рождения в формате ИМЯ#ДД.ММ.ГГГГ')
             ok = 1
             return
-        elif message.text == "Удалить День Рождения":
+        if message.text == "Удалить День Рождения":
             bot.send_message(human_id, 'Пожалуйста, вводите корректную записку, которую добавляли ранее')
             bot.send_message(human_id, 'Введите записку, которую желаете удалить')
             ok = 2
             return
-        elif message.text == "Проверить Дни Рождения":
+        if message.text == "Проверить Дни Рождения":
             ok = 3
         elif message.text == "Вывести созданные данные":
             if curs.execute('select v_birth_note, d_birthday from birthdays where id_telegram = {}'.format(human_id)):
@@ -70,7 +71,7 @@ def message_reply(message):
 
         elif ok == 2:
             curs.execute('delete from birthdays where id_telegram = {} and v_birth_note = \'{}\''.format(human_id,
-                                                                                                        message.text))
+                                                                                                         message.text))
             curs.execute('select * from birthdays where id_telegram = {} and v_birth_note = \'{}\''.format(human_id,
                                                                                                            message.text))
             test = curs.fetchall()
@@ -83,7 +84,8 @@ def message_reply(message):
         elif ok == 3:
             tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m")
             if curs.execute(
-                'select id_telegram, v_birth_note from birthdays where d_birthday like \'{}%\''.format(tomorrow)):
+                    'select id_telegram, '
+                    'v_birth_note from birthdays where d_birthday like \'{}%\''.format(tomorrow)):
                 for line in curs.fetchall():
                     bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
             else:
@@ -101,7 +103,7 @@ def start():
 
 
 @bot.message_handler(content_types='text')
-def Check_birthday(message):
+def Check_birthday():
     conn = sqlite3.connect('telegram_bot.db')
     curs = conn.cursor()
     tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m.%Y")
