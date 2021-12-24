@@ -17,7 +17,7 @@ bot = telebot.TeleBot(os.environ['my_tlabelen'])
 @bot.message_handler(commands=['start'])
 def button_message(message):
     """implementing buttons"""
-    bot.send_message(message.chat.id, 'Добро пожаловать!, {message.from_user.first_name}')
+    bot.send_message(message.chat.id, 'Добро пожаловать:), {message.from_user.first_name}')
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = telebot.types.KeyboardButton("Добавить День Рождения")
     item2 = telebot.types.KeyboardButton("Удалить День Рождения")
