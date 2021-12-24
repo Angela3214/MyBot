@@ -4,7 +4,7 @@ import os
 import sqlite3
 import telebot
 
-Form = '{{:<{10}}}'
+FORM = '{{:<{10}}}'
 
 conn1 = sqlite3.connect('telegram_bot.db')
 curs1 = conn1.cursor()
@@ -92,7 +92,7 @@ def message_reply(message):
                 f'select note, d_birthday from birthdays where id_tel = {human_id}'):
             for lines in curs.fetchall():
                 bot.send_message(human_id,
-                                 ''.join(Form.Format(line) for line in lines))
+                                 ''.join(FORM.FORMat(line) for line in lines))
     answer(label, conn, curs, message, human_id)
     curs.close()
 
