@@ -12,7 +12,7 @@ curs1.execute(
     v_birth_note varchar2(1000), d_birthday date)''')
 curs1.close()
 
-bot = telebot.TeleBot(os.environ['my_token'])
+bot = telebot.TeleBot(os.environ['my_tlabelen'])
 
 
 @bot.message_handler(commands=['start'])
@@ -33,8 +33,8 @@ def button_message(message):
     bot.send_message(message.chat.id, 'Выберите нужную функцию', reply_markup=markup)
 
 
-def answer(ok, conn, curs, message, human_id):
-    if ok == 1:
+def answer(label, conn, curs, message, human_id):
+    if label == 1:
         ind_end_name = message.text.index('#')
         name = message.text[:ind_end_name]
         data = message.text[ind_end_name + 1:]
@@ -42,7 +42,7 @@ def answer(ok, conn, curs, message, human_id):
             conn.commit()
             bot.send_message(human_id, 'Ух ты, успешно добавил!')
 
-    elif ok == 2:
+    elif label == 2:
         curs.execute(f'delete from birthdays where id_telegram = {human_id} '
                      f'and v_birth_note = \'{message.text}\'')
         curs.execute(
@@ -55,7 +55,7 @@ def answer(ok, conn, curs, message, human_id):
             bot.send_message(human_id, 'Я удалиль, теперь этого клоуна нет в твоих данных')
         else:
             bot.send_message(human_id, 'Ну я же попросил...Ошибка: такого пользователя нет')
-    elif ok == 3:
+    elif label == 3:
         tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m")
         if curs.execute(
                 f'select id_telegram, '
@@ -70,7 +70,7 @@ def answer(ok, conn, curs, message, human_id):
 def message_reply(message):
     """implementing answers"""
     try:
-        ok = 0
+        label = 0
         conn = sqlite3.connect('telegram_bot.db')
         curs = conn.cursor()
         human_id = message.chat.id
@@ -79,20 +79,20 @@ def message_reply(message):
                              'Для удобства использования вводите '
                              'уникальные записки пользователей')
             bot.send_message(human_id, 'Введите записку и дату рождения в формате ИМЯ#ДД.ММ.ГГГГ')
-            ok = 1
+            label = 1
         elif message.text == "Удалить День Рождения":
             bot.send_message(human_id, 'Пожалуйста, вводите корректную записку, '
                                        'которую добавляли ранее')
             bot.send_message(human_id, 'Введите записку, которую желаете удалить')
-            ok = 2
+            label = 2
         elif message.text == "Проверить Дни Рождения":
-            ok = 3
+            label = 3
         elif message.text == "Вывести созданные данные":
             if curs.execute(f'select v_birth_note, d_birthday from birthdays '
                             f'where id_telegram = {human_id}'):
                 for lines in curs.fetchall():
                     bot.send_message(human_id, ''.join(format_string.format(line) for line in lines))
-        answer(ok, conn, curs, message, human_id)
+        answer(label, conn, curs, message, human_id)
         curs.close()
 
     except Exception as e:
