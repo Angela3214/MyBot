@@ -5,7 +5,6 @@ import sqlite3
 import telebot
 
 FORM = '{{:<{10}}}'
-
 conn1 = sqlite3.connect('telegram_bot.db')
 curs1 = conn1.cursor()
 curs1.execute('''create table if not exists birthdays(id_tel varchar2(200), 
