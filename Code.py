@@ -3,7 +3,7 @@ from datetime import timedelta, date
 import sqlite3
 import os
 
-format_string = '{{:<{}}}'.format(20)
+format_string = '{{:<{}}}'.format(10)
 
 conn = sqlite3.connect('telegram_bot.db')
 curs = conn.cursor()
@@ -11,7 +11,8 @@ curs.execute(
     '''create table if not exists birthdays(id_telegram varchar2(200), v_birth_note varchar2(1000), d_birthday date)''')
 curs.close()
 
-bot = telebot.TeleBot(os.environ['my_token'])
+#bot = telebot.TeleBot(os.environ['my_token'])
+bot = telebot.TeleBot('5019599335:AAFvC46wOT3vX2GK-53gqLyJwBm8yQowWZM')
 
 
 @bot.message_handler(commands=['start'])
@@ -68,18 +69,25 @@ def message_reply(message):
                 bot.send_message(human_id, 'Ух ты, успешно добавил!')
 
         elif ok == 2:
-            if curs.execute('delete from birthdays where id_telegram = {} and v_birth_note = {}'.format(human_id,
-                                                                                                        message.text)):
+            curs.execute('delete from birthdays where id_telegram = {} and v_birth_note = \'{}\''.format(human_id,
+                                                                                                        message.text))
+            curs.execute('select * from birthdays where id_telegram = {} and v_birth_note = \'{}\''.format(human_id,
+                                                                                                           message.text))
+            test = curs.fetchall()
+            print(test)
+            if not test:
                 conn.commit()
                 bot.send_message(human_id, 'Я удалиль, теперь этого клоуна нет в твоих данных')
             else:
                 bot.send_message(human_id, 'Ну я же попросил...Ошибка: такого пользователя нет')
         elif ok == 3:
             tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m")
-            curs.execute(
-                'select id_telegram, v_birth_note from birthdays where d_birthday like \'{}%\''.format(tomorrow))
-            for line in curs.fetchall():
-                bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
+            if curs.execute(
+                'select id_telegram, v_birth_note from birthdays where d_birthday like \'{}%\''.format(tomorrow)):
+                for line in curs.fetchall():
+                    bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
+            else:
+                bot.send_message(human_id, 'Никого неть :c')
 
         ok = 0
         curs.close()
