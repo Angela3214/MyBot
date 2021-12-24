@@ -33,6 +33,37 @@ def button_message(message):
     bot.send_message(message.chat.id, 'Выберите нужную функцию', reply_markup=markup)
 
 
+def answer(ok, conn, curs, message, human_id):
+    if ok == 1:
+        ind_end_name = message.text.index('#')
+        name = message.text[:ind_end_name]
+        data = message.text[ind_end_name + 1:]
+        if curs.execute(f'insert into birthdays values(\'{human_id}\', \'{name}\', \'{data}\')'):
+            conn.commit()
+            bot.send_message(human_id, 'Ух ты, успешно добавил!')
+
+    elif ok == 2:
+        curs.execute(f'delete from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
+        curs.execute(
+            f'select * from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
+        test = curs.fetchall()
+        print(test)
+        if not test:
+            conn.commit()
+            bot.send_message(human_id, 'Я удалиль, теперь этого клоуна нет в твоих данных')
+        else:
+            bot.send_message(human_id, 'Ну я же попросил...Ошибка: такого пользователя нет')
+    elif ok == 3:
+        tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m")
+        if curs.execute(
+                f'select id_telegram, '
+                'v_birth_note from birthdays where d_birthday like \'{tomorrow}%\''):
+            for line in curs.fetchall():
+                bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
+        else:
+            bot.send_message(human_id, 'Никого неть :c')
+
+
 @bot.message_handler(content_types='text')
 def message_reply(message):
     """implementing answers"""
@@ -41,7 +72,6 @@ def message_reply(message):
         conn = sqlite3.connect('telegram_bot.db')
         curs = conn.cursor()
         human_id = message.chat.id
-
         if message.text == "Добавить День Рождения":
             bot.send_message(human_id,
                              'Для удобства использования вводите уникальные записки пользователей')
@@ -57,35 +87,7 @@ def message_reply(message):
             if curs.execute(f'select v_birth_note, d_birthday from birthdays where id_telegram = {human_id}'):
                 for lines in curs.fetchall():
                     bot.send_message(human_id, ''.join(format_string.format(line) for line in lines))
-
-        if ok == 1:
-            ind_end_name = message.text.index('#')
-            name = message.text[:ind_end_name]
-            data = message.text[ind_end_name + 1:]
-            if curs.execute(f'insert into birthdays values(\'{human_id}\', \'{name}\', \'{data}\')'):
-                conn.commit()
-                bot.send_message(human_id, 'Ух ты, успешно добавил!')
-
-        elif ok == 2:
-            curs.execute(f'delete from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
-            curs.execute(
-                f'select * from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
-            test = curs.fetchall()
-            print(test)
-            if not test:
-                conn.commit()
-                bot.send_message(human_id, 'Я удалиль, теперь этого клоуна нет в твоих данных')
-            else:
-                bot.send_message(human_id, 'Ну я же попросил...Ошибка: такого пользователя нет')
-        elif ok == 3:
-            tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m")
-            if curs.execute(
-                    f'select id_telegram, '
-                    'v_birth_note from birthdays where d_birthday like \'{tomorrow}%\''):
-                for line in curs.fetchall():
-                    bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
-            else:
-                bot.send_message(human_id, 'Никого неть :c')
+        answer(ok, conn, curs, message, human_id)
         curs.close()
 
     except Exception as e:
