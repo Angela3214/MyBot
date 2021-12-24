@@ -43,11 +43,9 @@ def answer(label, conn, curs, message, human_id):
             bot.send_message(human_id, 'Ух ты, успешно добавил!')
 
     elif label == 2:
-        curs.execute(f'delete from birthdays where id_telegram = {human_id} '
-                     f'and v_birth_note = \'{message.text}\'')
+        curs.execute(f'delete from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
         curs.execute(
-            f'select * from birthdays where id_telegram = {human_id} '
-            f'and v_birth_note = \'{message.text}\'')
+            f'select * from birthdays where id_telegram = {human_id} and v_birth_note = \'{message.text}\'')
         test = curs.fetchall()
         print(test)
         if not test:
@@ -58,8 +56,7 @@ def answer(label, conn, curs, message, human_id):
     elif label == 3:
         tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m")
         if curs.execute(
-                f'select id_telegram, '
-                'v_birth_note from birthdays where d_birthday like \'{tomorrow}%\''):
+                f'select id_telegram, v_birth_note from birthdays where d_birthday like \'{tomorrow}%\''):
             for line in curs.fetchall():
                 bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
         else:
@@ -88,15 +85,14 @@ def message_reply(message):
         elif message.text == "Проверить Дни Рождения":
             label = 3
         elif message.text == "Вывести созданные данные":
-            if curs.execute(f'select v_birth_note, d_birthday from birthdays '
-                            f'where id_telegram = {human_id}'):
+            if curs.execute(f'select v_birth_note, d_birthday from birthdays where id_telegram = {human_id}'):
                 for lines in curs.fetchall():
                     bot.send_message(human_id, ''.join(format_string.format(line) for line in lines))
         answer(label, conn, curs, message, human_id)
         curs.close()
 
-    except Exception as e:
-        print(e)
+    except Exception as element:
+        print(element)
 
 
 def start():
