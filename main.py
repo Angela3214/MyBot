@@ -92,7 +92,7 @@ def message_reply(message):
                 f'select note, d_birthday from birthdays where id_tel = {human_id}'):
             for lines in curs.fetchall():
                 bot.send_message(human_id,
-                                 ''.join(FORM.FORMat(line) for line in lines))
+                                 ''.join(FORM.format(line) for line in lines))
     answer(label, conn, curs, message, human_id)
     curs.close()
 
