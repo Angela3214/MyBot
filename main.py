@@ -95,7 +95,7 @@ def message_reply(message):
         mp[human_id] = 3
     elif message.text == "Вывести созданные данные":
         if curs.execute(
-                'select note, d_birthday from birthdays where id_telegram = {hunam_id}'):
+                'select note, d_birthday from birthdays where id_tel = {hunam_id}'):
             for lines in curs.fetchall():
                 bot.send_message(human_id, ''.join(FORM.format(line) for line in lines))
     curs.close()
