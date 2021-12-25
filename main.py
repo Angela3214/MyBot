@@ -65,7 +65,7 @@ def answer(label, message, human_id):
         if curs3.execute(
                 f'select id_tel, note from birthdays where d_birthday like \'{tomorrow}%\''):
             for line in curs3.fetchall():
-                bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождеия')
+                bot.send_message(line[0], 'Не забудь поздравить ' + line[1] + ' с Днём Рождения')
         else:
             bot.send_message(human_id, 'Никого неть :c')
     mp.pop(human_id)
