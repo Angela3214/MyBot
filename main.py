@@ -75,6 +75,14 @@ def answer(label, message, human_id):
         bot.send_message(human_id, 'Ошибка с БД !')
 
 
+def reminder(list1, human_id):
+    if list1:
+        for line in list1:
+            bot.send_message(human_id, f'{line[0]} - {line[1]}')
+    else:
+        bot.send_message(human_id, 'Никого неть :c')
+
+
 @bot.message_handler(content_types='text')
 def message_reply(message):
     """implementing answers"""
@@ -100,11 +108,7 @@ def message_reply(message):
             curs.execute(
                 f'select id_tel, note from birthdays where d_birthday like \'{tomorrow}%\'')
             list1 = curs.fetchall()
-            if list1:
-                for line in list1:
-                    bot.send_message(line[0], f'Не забудь поздравить {line[1]} с Днём Рождеия')
-            else:
-                bot.send_message(human_id, 'Никого неть :c')
+            reminder(list1, human_id)
         elif message.text == "Вывести созданные данные":
             curs.execute(
                     f'select note, d_birthday from birthdays where id_tel = \'{human_id}\'')
