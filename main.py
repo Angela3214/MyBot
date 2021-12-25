@@ -67,11 +67,11 @@ def answer(label, message, human_id):
                 bot.send_message(human_id, 'Ну я же попросил...Ошибка: такого пользователя нет')
         mp.pop(human_id)
 
-    except ValueError as e:
-        print(e)
+    except ValueError as exs:
+        print(exs)
         bot.send_message(human_id, 'Ошибка ввода !')
-    except sqlite3.Error as e:
-        print(e)
+    except sqlite3.Error as exs:
+        print(exs)
         bot.send_message(human_id, 'Ошибка с БД !')
 
 
@@ -115,11 +115,11 @@ def message_reply(message):
             else:
                 bot.send_message(human_id, 'Никого неть :c')
         curs.close()
-    except ValueError as element:
-        print(element)
+    except ValueError as exs:
+        print(exs)
         bot.send_message(human_id, 'Ошибка ввода !')
-    except sqlite3.Error as element:
-        print(element)
+    except sqlite3.Error as exs:
+        print(exs)
         bot.send_message(human_id, 'Ошибка с БД !')
 
 
