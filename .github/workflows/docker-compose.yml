@@ -2,7 +2,7 @@ version: '3'
 
 services:
   balaboba:
-    image: angela321/mybot
+    image: angela321/mybot:latest
     labels:
       - "com.centurylinklabs.watchtower.scope=myscope"
     environment:
