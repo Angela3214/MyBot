@@ -11,8 +11,8 @@ curs1.execute('''create table if not exists birthdays(id_tel varchar2(200),
 note varchar2(1000), d_birthday date)''')
 curs1.close()
 
-#bot = telebot.TeleBot(os.environ['my_token'])
-bot = telebot.TeleBot('5019599335:AAFvC46wOT3vX2GK-53gqLyJwBm8yQowWZM')
+bot = telebot.TeleBot(os.environ['my_token'])
+#bot = telebot.TeleBot('5019599335:AAFvC46wOT3vX2GK-53gqLyJwBm8yQowWZM')
 
 mp = {}
 
