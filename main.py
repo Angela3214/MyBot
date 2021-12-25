@@ -76,6 +76,7 @@ def answer(label, message, human_id):
 
 
 def reminder(list1, human_id):
+    """Reminder, if tomorrow anybody has birthday"""
     if list1:
         for line in list1:
             bot.send_message(human_id, f'{line[0]} - {line[1]}')
