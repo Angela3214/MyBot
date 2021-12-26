@@ -24,7 +24,7 @@ def button_message(message):
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = telebot.types.KeyboardButton("Добавить День Рождения")
     item2 = telebot.types.KeyboardButton("Удалить День Рождения")
-    item3 = telebot.types.KeyboardButton("Вывести созданные данные")
+    item3 = telebot.types.KeyboardButton("Вывести дни рождения")
     item4 = telebot.types.KeyboardButton("Проверить Дни Рождения")
     markup.add(item1)
     markup.add(item2)
