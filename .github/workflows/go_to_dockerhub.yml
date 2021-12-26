@@ -58,4 +58,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            my_secret_token=${{secrets.DOCKER_TOKEN}}
+            token_server=${{secrets.DOCKER_TOKEN}}
