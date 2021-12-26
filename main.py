@@ -110,7 +110,7 @@ def message_reply(message):
                 f'select id_tel, note from birthdays where d_birthday like \'{tomorrow}%\'')
             list1 = curs.fetchall()
             reminder(list1, human_id)
-        elif message.text == "Вывести созданные данные":
+        elif message.text == "Вывести дни рождения":
             curs.execute(
                     f'select note, d_birthday from birthdays where id_tel = \'{human_id}\'')
             list1 = curs.fetchall()
