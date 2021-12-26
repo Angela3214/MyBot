@@ -5,8 +5,6 @@ services:
     image: angela321/mybot:latest
     labels:
       - "com.centurylinklabs.watchtower.scope=myscope"
-    environment:
-      my_token: "${token_server}"
 
   watchtower:
     image: containrrr/watchtower
