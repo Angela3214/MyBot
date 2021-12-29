@@ -1,7 +1,8 @@
 """This is the code of my bot"""
-from datetime import timedelta, date
 import os
 import sqlite3
+from datetime import date, timedelta
+
 import telebot
 
 FORM = '{{:<{10}}}'
@@ -12,25 +13,25 @@ note varchar2(1000), d_birthday date)''')
 curs1.close()
 
 bot = telebot.TeleBot(os.environ['my_token'])
-
 mp = {}
 
 
-@bot.message_handler(commands=['start'])
-def button_message(message):
+def markup_layout():
     """implementing buttons"""
-    username = message.from_user.first_name
-    bot.send_message(message.chat.id, 'Добро пожаловать, ' + username + "!")
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = telebot.types.KeyboardButton("Добавить День Рождения")
     item2 = telebot.types.KeyboardButton("Удалить День Рождения")
     item3 = telebot.types.KeyboardButton("Вывести дни рождения")
     item4 = telebot.types.KeyboardButton("Проверить Дни Рождения")
-    markup.add(item1)
-    markup.add(item2)
-    markup.add(item3)
-    markup.add(item4)
-    bot.send_message(message.chat.id, 'Выберите нужную функцию', reply_markup=markup)
+    markup.row(item1, item2)
+    markup.row(item3, item4)
+    return markup
+
+@bot.message_handler(commands=['start'])
+def button_message(message):
+    """starting new user"""
+    bot.send_message(message.chat.id, f'Добро пожаловать, {message.from_user.first_name}!')
+    bot.send_message(message.chat.id, 'Выберите нужную функцию', reply_markup=markup_layout())
 
 
 def answer(label, message, human_id):
@@ -109,9 +110,12 @@ def message_reply(message):
             bot.send_message(human_id, 'Введите записку, которую желаете удалить')
             mp[human_id] = 2
         elif message.text == "Проверить Дни Рождения":
+            today = date.today().strftime("%d.%m")
             tomorrow = (date.today() + timedelta(days=1)).strftime("%d.%m")
             curs.execute(
-                f'select id_tel, note from birthdays where d_birthday like \'{tomorrow}%\'')
+                f'select id_tel, note, d_birthday from birthdays'
+                f'where d_birthday like \'{tomorrow}\''
+                f'or d_birthday like \'{today}\' order by d_birthday')
             list1 = curs.fetchall()
             reminder(list1, human_id)
         elif message.text == "Вывести дни рождения":
